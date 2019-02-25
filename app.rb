@@ -14,10 +14,14 @@ class WebClient
 
   def get_channel(id)
     res = @client.conversations_info(channel: id, token: ENV['SLACK_BOT_TOKEN'])
-    if res.channel.is_im
+    if res.channel.is_im #個人DMの場合
       channel = 'direct_message'
     else
-      channel = res.channel.name
+      if res.channel.is_channel #publicチャンネルの場合
+        channel = res.channel.name
+      else #privateチャンネル|グループDMの場合
+        channel = false
+      end
     end
     return channel
   end
@@ -38,18 +42,19 @@ end
 
 client.on :message do |data|
   if data.files != nil
-    p data
-    user_name = data.user_profile.real_name.gsub(/ /, '-')
-    file_title = data.files[0].title + '.' + data.files[0].filetype
-    file_url = data.files[0].url_private
-    description = data.text
-    time = Time.at(data.ts.to_f).strftime("%Y-%m-%d")
     channel = web_client.get_channel(data.channel)
-    mimetype = data.files[0].mimetype
-    filename = time + '_' + channel + '_' + user_name + '_' + file_title
-    handle_file.download(file_url, file_title)
-    google_drive.upload(filename, description, file_title, mimetype)
-    handle_file.delete(file_title)
+    description = data.text
+    if !description == ' ' && channel
+      user_name = data.user_profile.real_name.gsub(/ /, '-')
+      file_title = data.files[0].title + '.' + data.files[0].filetype
+      file_url = data.files[0].url_private
+      time = Time.at(data.ts.to_f).strftime("%Y-%m-%d")
+      mimetype = data.files[0].mimetype
+      filename = time + '_' + channel + '_' + user_name + '_' + file_title
+      handle_file.download(file_url, file_title)
+      google_drive.upload(filename, description, file_title, mimetype)
+      handle_file.delete(file_title)
+    end
   end
 end
 
