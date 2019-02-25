@@ -44,7 +44,7 @@ client.on :message do |data|
   if data.files != nil
     channel = web_client.get_channel(data.channel)
     description = data.text
-    if !description == ' ' && channel
+    if !(description =~ /^(!|！)/) && channel && data.files[0].mode != 'snippet'
       user_name = data.user_profile.real_name.gsub(/ /, '-')
       file_title = data.files[0].title + '.' + data.files[0].filetype
       file_url = data.files[0].url_private
