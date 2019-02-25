@@ -44,7 +44,7 @@ class GoogleDrive
   end
 
   def upload(filename, description, source, mimetype)
-    dir_name = ''
+    dir_name = ENV['GOOGLEDRIVE_DIRNAME']
     file_metadata = {
       name: filename,
       parents: [dir_name],
