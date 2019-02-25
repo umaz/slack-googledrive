@@ -30,7 +30,7 @@ class WebClient
 end
 
 Slack.configure do |conf|
-  conf.token = ENV[SLACK_BOT_TOKEN]
+  conf.token = ENV['SLACK_BOT_TOKEN']
 end
 
 client = Slack::RealTime::Client.new
@@ -44,14 +44,15 @@ end
 
 client.on :message do |data|
   if data.files != nil
+    p data
     user_name = data.user_profile.real_name.gsub(/ /, '-')
-    file_title = data.files[0].name
+    file_title = data.files[0].title + '.' + data.files[0].filetype
     file_url = web_client.get_public_url(data.files[0].id)
     description = data.text
     time = Time.at(data.ts.to_f).strftime("%Y-%m-%d")
-    channnel = web_client.get_channel(data.channel)
+    channel = web_client.get_channel(data.channel)
     mimetype = data.files[0].mimetype
-    filename = time + '_' + user_name + '_' + file_title
+    filename = time + '_' + channel + '_' + user_name + '_' + file_title
     handle_file.download(file_url, file_title)
     web_client.delete_public_url(data.files[0].id)
     google_drive.upload(filename, description, file_title, mimetype)

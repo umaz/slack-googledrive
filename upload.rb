@@ -43,17 +43,8 @@ class GoogleDrive
     credentials
   end
 
-  def upload(filename, description, source, mimetype, channel)
-    case channel
-    when 'hoge'
-      dir_name = ''
-    when 'fuga'
-      dir_name = ''
-    when 'piyo'
-      dir_name = ''
-    else
-      dir_name = ''
-    end
+  def upload(filename, description, source, mimetype)
+    dir_name = ''
     file_metadata = {
       name: filename,
       parents: [dir_name],
