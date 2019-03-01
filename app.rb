@@ -24,9 +24,7 @@ class WebClient
         channel = false
       end
     end
-    return channel
   end
-end
 
 Slack.configure do |conf|
   conf.token = ENV['SLACK_BOT_TOKEN']
