@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'rubygems'
 require 'bundler/setup'
 require 'slack-ruby-client'
@@ -41,6 +42,13 @@ client.on :hello do
 end
 
 client.on :message do |data|
+  case data.text
+  when '<@> hi'
+    client.message(channel: data.channel, text: 'hi')
+  when '<@> help'
+    text = 'このbotがいるpublic channelにアップロードした画像をGoogleDriveに転送します。転送してほしくない画像の場合メッセージを `!` から始めてください'
+    client.message(channel: data.channel, text: text)
+  end
   if data.files != nil
     channel = web_client.get_channel(data.channel)
     description = data.text
